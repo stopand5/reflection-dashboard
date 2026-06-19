@@ -34,7 +34,7 @@
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/20 0:39:03　｜　全46件</p>
+<p class="meta">更新: 2026/6/20 0:40:15　｜　全46件</p>
 
 <div class="card">
   <div class="stats">
@@ -65,37 +65,37 @@
     <div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">3.6</div>
-          <div class="dow-bar" style="height:72%;background:#e8a020;width:70%"></div>
+          <div class="dow-bar" style="height:72%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">3.7</div>
-          <div class="dow-bar" style="height:74%;background:#e8a020;width:70%"></div>
+          <div class="dow-bar" style="height:74%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">3.0</div>
-          <div class="dow-bar" style="height:60%;background:#e8a020;width:70%"></div>
+          <div class="dow-bar" style="height:60%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">3.6</div>
-          <div class="dow-bar" style="height:72%;background:#e8a020;width:70%"></div>
+          <div class="dow-bar" style="height:72%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">3.8</div>
-          <div class="dow-bar" style="height:76%;background:#e8a020;width:70%"></div>
+          <div class="dow-bar" style="height:76%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">4.0</div>
-          <div class="dow-bar" style="height:80%;background:#27ae60;width:70%"></div>
+          <div class="dow-bar" style="height:80%;background:#8a8a96;width:70%"></div>
         </div>
       </div><div class="dow-col">
         <div class="dow-bar-wrap">
           <div class="dow-bar-label">4.0</div>
-          <div class="dow-bar" style="height:80%;background:#27ae60;width:70%"></div>
+          <div class="dow-bar" style="height:80%;background:#8a8a96;width:70%"></div>
         </div>
       </div>
   </div>
@@ -271,8 +271,8 @@ new Chart(ctx3, {
     datasets: [{
       label: '平均気分スコア',
       data: emoAvgData,
-      backgroundColor: 'rgba(120,120,130,0.5)',
-      borderColor: 'rgba(90,90,100,0.8)',
+      backgroundColor: emoColors.map(c => c + 'cc'),
+      borderColor: emoColors,
       borderWidth: 2,
       borderRadius: 6,
     }]
