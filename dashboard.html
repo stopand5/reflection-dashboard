@@ -19,16 +19,22 @@
   .stat { background: #f9f9f9; border-radius: 8px; padding: 12px 18px; text-align: center; }
   .stat .num { font-size: 28px; font-weight: bold; color: #e8a020; }
   .stat .lbl { font-size: 11px; color: #888; margin-top: 2px; }
-  .dow-grid { display: flex; margin-top: 12px; }
-  .dow-cell { text-align: center; flex-shrink: 0; }
-  .dow-count { font-size: 11px; color: #999; margin-bottom: 4px; }
+  .dow-chart { display: flex; align-items: flex-end; gap: 8px; height: 200px; padding: 0 8px; border-bottom: 2px solid #eee; margin-bottom: 8px; }
+  .dow-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .dow-bar-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; }
+  .dow-bar { width: 60%; border-radius: 4px 4px 0 0; min-height: 4px; position: relative; }
+  .dow-bar-label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 3px; }
+  .dow-labels { display: flex; gap: 8px; padding: 0 8px; }
+  .dow-label-col { flex: 1; text-align: center; }
+  .dow-day { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 2px; }
+  .dow-count { font-size: 11px; color: #999; margin-bottom: 6px; }
   .dow-emotions { display: flex; flex-direction: column; gap: 3px; align-items: center; }
   .emo-badge { font-size: 10px; padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
 </style>
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/20 0:37:16　｜　全46件</p>
+<p class="meta">更新: 2026/6/20 0:39:03　｜　全46件</p>
 
 <div class="card">
   <div class="stats">
@@ -55,54 +61,96 @@
 
 <div class="card">
   <h2>曜日別 平均気分スコア</h2>
-  <div class="chart-wrap" style="height:240px">
-    <canvas id="dowChart"></canvas>
+  <div class="dow-chart">
+    <div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">3.6</div>
+          <div class="dow-bar" style="height:72%;background:#e8a020;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">3.7</div>
+          <div class="dow-bar" style="height:74%;background:#e8a020;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">3.0</div>
+          <div class="dow-bar" style="height:60%;background:#e8a020;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">3.6</div>
+          <div class="dow-bar" style="height:72%;background:#e8a020;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">3.8</div>
+          <div class="dow-bar" style="height:76%;background:#e8a020;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">4.0</div>
+          <div class="dow-bar" style="height:80%;background:#27ae60;width:70%"></div>
+        </div>
+      </div><div class="dow-col">
+        <div class="dow-bar-wrap">
+          <div class="dow-bar-label">4.0</div>
+          <div class="dow-bar" style="height:80%;background:#27ae60;width:70%"></div>
+        </div>
+      </div>
   </div>
-  <div class="dow-grid">
+  <div class="dow-labels">
     
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">月</div>
       <div class="dow-count">5件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#C8181822;color:#C81818;border:1px solid #C8181866">怒り</span><span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">火</div>
       <div class="dow-count">11件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#3EA83522;color:#3EA835;border:1px solid #3EA83566">信頼</span><span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">水</div>
       <div class="dow-count">5件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#1858C022;color:#1858C0;border:1px solid #1858C066">悲しみ</span><span class="emo-badge" style="background:#3EA83522;color:#3EA835;border:1px solid #3EA83566">信頼</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">木</div>
       <div class="dow-count">9件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span><span class="emo-badge" style="background:#18AAAA22;color:#18AAAA;border:1px solid #18AAAA66">恐れ</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">金</div>
       <div class="dow-count">6件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span><span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#3EA83522;color:#3EA835;border:1px solid #3EA83566">信頼</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">土</div>
       <div class="dow-count">4件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#3EA83522;color:#3EA835;border:1px solid #3EA83566">信頼</span><span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span>
         
       </div>
     </div>
-    <div class="dow-cell">
+    <div class="dow-label-col">
+      <div class="dow-day">日</div>
       <div class="dow-count">6件</div>
       <div class="dow-emotions">
         <span class="emo-badge" style="background:#E0680022;color:#E06800;border:1px solid #E0680066">期待</span><span class="emo-badge" style="background:#E8C00022;color:#E8C000;border:1px solid #E8C00066">喜び</span><span class="emo-badge" style="background:#1858C022;color:#1858C0;border:1px solid #1858C066">悲しみ</span>
@@ -209,79 +257,6 @@ new Chart(ctx, {
     }
   }
 });
-// 曜日別平均気分スコアグラフ
-const dowLabels = ["月曜","火曜","水曜","木曜","金曜","土曜","日曜"];
-const dowAvgData = [3.6,3.7,3,3.6,3.8,4,4];
-const dowTop3Data = [["怒り","期待","喜び"],["期待","信頼","喜び"],["期待","悲しみ","信頼"],["期待","喜び","恐れ"],["喜び","期待","信頼"],["信頼","期待","喜び"],["期待","喜び","悲しみ"]];
-const dowCountData = [5,11,5,9,6,4,6];
-
-const ctx4 = document.getElementById('dowChart').getContext('2d');
-const dowChart = new Chart(ctx4, {
-  type: 'bar',
-  data: {
-    labels: dowLabels,
-    datasets: [{
-      label: '平均気分スコア',
-      data: dowAvgData,
-      backgroundColor: dowAvgData.map(v =>
-        v === null ? '#ddd' : v >= 4 ? 'rgba(39,174,96,0.7)' : v <= 2 ? 'rgba(231,76,60,0.7)' : 'rgba(232,160,32,0.7)'
-      ),
-      borderColor: dowAvgData.map(v =>
-        v === null ? '#ccc' : v >= 4 ? '#27ae60' : v <= 2 ? '#e74c3c' : '#e8a020'
-      ),
-      borderWidth: 2,
-      borderRadius: 6,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        min: 0, max: 5,
-        ticks: { stepSize: 1, callback: v => ['','⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'][v] || '', font: { size: 11 } },
-        grid: { color: 'rgba(0,0,0,0.06)' },
-      },
-      x: { grid: { display: false }, ticks: { font: { size: 13 } } },
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: ctx => {
-            const i = ctx.dataIndex;
-            const avg = dowAvgData[i];
-            const top3 = dowTop3Data[i];
-            const cnt = dowCountData[i];
-            return [
-              '平均: ' + (avg !== null ? avg.toFixed(1) : '-'),
-              '件数: ' + cnt + '件',
-              '感情: ' + (top3.length > 0 ? top3.join('・') : '-'),
-            ];
-          }
-        }
-      }
-    },
-    animation: {
-      onComplete() {
-        const meta = dowChart.getDatasetMeta(0);
-        const cells = document.querySelectorAll('.dow-cell');
-        if (!meta.data.length || !cells.length) return;
-        meta.data.forEach((bar, i) => {
-          if (!cells[i]) return;
-          const w = bar.width;
-          cells[i].style.width = w + 'px';
-        });
-        // グリッド全体の左マージンをチャートエリアの左端に合わせる
-        const chartLeft = dowChart.chartArea.left;
-        const firstBarX = meta.data[0].x;
-        const offset = firstBarX - meta.data[0].width / 2;
-        document.querySelector('.dow-grid').style.paddingLeft = offset + 'px';
-      }
-    }
-  }
-});
-
 // 感情別平均気分スコアグラフ
 const emoLabels   = ["喜び","信頼","恐れ","驚き","悲しみ","嫌悪","怒り","期待"];
 const emoAvgData  = [4.3,3.8,2.9,4,3,null,2.7,3.7];
