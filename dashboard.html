@@ -23,7 +23,7 @@
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/19 23:43:39　｜　全46件</p>
+<p class="meta">更新: 2026/6/19 23:53:59　｜　全46件</p>
 
 <div class="card">
   <div class="stats">
@@ -45,6 +45,13 @@
   <h2>月別 感情比率（帯グラフ）</h2>
   <div class="chart-wrap">
     <canvas id="emotionChart"></canvas>
+  </div>
+</div>
+
+<div class="card">
+  <h2>感情別 平均ポジ度（主感情・副感情合算）</h2>
+  <div class="chart-wrap">
+    <canvas id="emoPosiChart"></canvas>
   </div>
 </div>
 
@@ -138,6 +145,59 @@ new Chart(ctx, {
     }
   }
 });
+// 感情別平均ポジ度グラフ
+const emoLabels   = ["喜び","信頼","恐れ","驚き","悲しみ","嫌悪","怒り","期待"];
+const emoAvgData  = [4.3,3.8,2.9,4,3,null,2.7,3.7];
+const emoCountData = [22,18,9,1,8,0,3,31];
+const emoColors   = ["#E8C000","#3EA835","#18AAAA","#4458C8","#1858C0","#8018A0","#C81818","#E06800"];
+
+const ctx3 = document.getElementById('emoPosiChart').getContext('2d');
+new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: emoLabels,
+    datasets: [{
+      label: '平均ポジ度',
+      data: emoAvgData,
+      backgroundColor: emoColors.map(c => c + 'cc'),
+      borderColor: emoColors,
+      borderWidth: 2,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        min: 0, max: 5,
+        ticks: {
+          stepSize: 1,
+          callback: v => ['','⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'][v] || '',
+          font: { size: 11 },
+        },
+        grid: { color: 'rgba(0,0,0,0.06)' },
+      },
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 12 } },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const avg = ctx.parsed.y;
+            const cnt = emoCountData[ctx.dataIndex];
+            return ['平均ポジ度: ' + (avg !== null ? avg.toFixed(1) : '-'), '出現回数: ' + cnt + '件'];
+          }
+        }
+      }
+    }
+  }
+});
+
 // 月別感情帯グラフ
 const monthLabels   = ["1月","2月","3月","4月","5月","6月"];
 const emotionDatasets = [{"label":"喜び","data":[22.4,37.5,22.2,16.7,22.2,37.5],"backgroundColor":"#E8C000"},{"label":"信頼","data":[14.3,25,0,25,33.3,28.1],"backgroundColor":"#3EA835"},{"label":"恐れ","data":[8.2,0,22.2,16.7,0,3.1],"backgroundColor":"#18AAAA"},{"label":"驚き","data":[4.1,0,0,0,0,0],"backgroundColor":"#4458C8"},{"label":"悲しみ","data":[6.1,4.2,0,8.3,22.2,0],"backgroundColor":"#1858C0"},{"label":"嫌悪","data":[0,0,0,0,0,0],"backgroundColor":"#8018A0"},{"label":"怒り","data":[4.1,0,11.1,0,0,0],"backgroundColor":"#C81818"},{"label":"期待","data":[40.8,33.3,44.4,33.3,22.2,31.3],"backgroundColor":"#E06800"}];
