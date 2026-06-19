@@ -19,8 +19,8 @@
   .stat { background: #f9f9f9; border-radius: 8px; padding: 12px 18px; text-align: center; }
   .stat .num { font-size: 28px; font-weight: bold; color: #e8a020; }
   .stat .lbl { font-size: 11px; color: #888; margin-top: 2px; }
-  .dow-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
-  .dow-cell { text-align: center; padding: 6px 2px; }
+  .dow-grid { display: flex; margin-top: 12px; }
+  .dow-cell { text-align: center; flex-shrink: 0; }
   .dow-count { font-size: 11px; color: #999; margin-bottom: 4px; }
   .dow-emotions { display: flex; flex-direction: column; gap: 3px; align-items: center; }
   .emo-badge { font-size: 10px; padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
@@ -28,7 +28,7 @@
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/20 0:33:07　｜　全46件</p>
+<p class="meta">更新: 2026/6/20 0:35:22　｜　全46件</p>
 
 <div class="card">
   <div class="stats">
@@ -216,7 +216,7 @@ const dowTop3Data = [["怒り","期待","喜び"],["期待","信頼","喜び"],[
 const dowCountData = [5,11,5,9,6,4,6];
 
 const ctx4 = document.getElementById('dowChart').getContext('2d');
-new Chart(ctx4, {
+const dowChart = new Chart(ctx4, {
   type: 'bar',
   data: {
     labels: dowLabels,
@@ -260,6 +260,23 @@ new Chart(ctx4, {
             ];
           }
         }
+      }
+    },
+    animation: {
+      onComplete() {
+        const meta = dowChart.getDatasetMeta(0);
+        const cells = document.querySelectorAll('.dow-cell');
+        if (!meta.data.length || !cells.length) return;
+        meta.data.forEach((bar, i) => {
+          if (!cells[i]) return;
+          const w = bar.width;
+          cells[i].style.width = w + 'px';
+        });
+        // グリッド全体の左マージンをチャートエリアの左端に合わせる
+        const chartLeft = dowChart.chartArea.left;
+        const firstBarX = meta.data[0].x;
+        const offset = firstBarX - meta.data[0].width / 2;
+        document.querySelector('.dow-grid').style.paddingLeft = offset + 'px';
       }
     }
   }
