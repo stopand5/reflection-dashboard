@@ -19,11 +19,15 @@
   .stat { background: #f9f9f9; border-radius: 8px; padding: 12px 18px; text-align: center; }
   .stat .num { font-size: 28px; font-weight: bold; color: #e8a020; }
   .stat .lbl { font-size: 11px; color: #888; margin-top: 2px; }
+  .dow-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  .dow-table th { background: #f5f5f5; padding: 8px 12px; text-align: left; color: #666; font-weight: normal; }
+  .dow-table td { padding: 8px 12px; border-top: 1px solid #eee; }
+  .dow-table tr:hover td { background: #fafafa; }
 </style>
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/20 0:23:14　｜　全46件</p>
+<p class="meta">更新: 2026/6/20 0:28:18　｜　全46件</p>
 
 <div class="card">
   <div class="stats">
@@ -46,6 +50,54 @@
   <div class="chart-wrap">
     <canvas id="emotionChart"></canvas>
   </div>
+</div>
+
+<div class="card">
+  <h2>曜日別 平均気分スコア</h2>
+  <div class="chart-wrap" style="height:260px">
+    <canvas id="dowChart"></canvas>
+  </div>
+  <table class="dow-table">
+    <thead><tr><th>曜日</th><th>平均</th><th>件数</th><th>感情トップ3</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>日曜</td>
+        <td>4.0</td>
+        <td>6件</td>
+        <td>期待・喜び・悲しみ</td>
+      </tr><tr>
+        <td>月曜</td>
+        <td>3.6</td>
+        <td>5件</td>
+        <td>怒り・期待・喜び</td>
+      </tr><tr>
+        <td>火曜</td>
+        <td>3.7</td>
+        <td>11件</td>
+        <td>期待・信頼・喜び</td>
+      </tr><tr>
+        <td>水曜</td>
+        <td>3.0</td>
+        <td>5件</td>
+        <td>期待・悲しみ・信頼</td>
+      </tr><tr>
+        <td>木曜</td>
+        <td>3.6</td>
+        <td>9件</td>
+        <td>期待・喜び・恐れ</td>
+      </tr><tr>
+        <td>金曜</td>
+        <td>3.8</td>
+        <td>6件</td>
+        <td>喜び・期待・信頼</td>
+      </tr><tr>
+        <td>土曜</td>
+        <td>4.0</td>
+        <td>4件</td>
+        <td>信頼・期待・喜び</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="card">
@@ -145,6 +197,62 @@ new Chart(ctx, {
     }
   }
 });
+// 曜日別平均気分スコアグラフ
+const dowLabels = ["日曜","月曜","火曜","水曜","木曜","金曜","土曜"];
+const dowAvgData = [4,3.6,3.7,3,3.6,3.8,4];
+const dowTop3Data = [["期待","喜び","悲しみ"],["怒り","期待","喜び"],["期待","信頼","喜び"],["期待","悲しみ","信頼"],["期待","喜び","恐れ"],["喜び","期待","信頼"],["信頼","期待","喜び"]];
+const dowCountData = [6,5,11,5,9,6,4];
+
+const ctx4 = document.getElementById('dowChart').getContext('2d');
+new Chart(ctx4, {
+  type: 'bar',
+  data: {
+    labels: dowLabels,
+    datasets: [{
+      label: '平均気分スコア',
+      data: dowAvgData,
+      backgroundColor: dowAvgData.map(v =>
+        v === null ? '#ddd' : v >= 4 ? 'rgba(39,174,96,0.7)' : v <= 2 ? 'rgba(231,76,60,0.7)' : 'rgba(232,160,32,0.7)'
+      ),
+      borderColor: dowAvgData.map(v =>
+        v === null ? '#ccc' : v >= 4 ? '#27ae60' : v <= 2 ? '#e74c3c' : '#e8a020'
+      ),
+      borderWidth: 2,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        min: 0, max: 5,
+        ticks: { stepSize: 1, callback: v => ['','⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'][v] || '', font: { size: 11 } },
+        grid: { color: 'rgba(0,0,0,0.06)' },
+      },
+      x: { grid: { display: false }, ticks: { font: { size: 13 } } },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const i = ctx.dataIndex;
+            const avg = dowAvgData[i];
+            const top3 = dowTop3Data[i];
+            const cnt = dowCountData[i];
+            return [
+              '平均: ' + (avg !== null ? avg.toFixed(1) : '-'),
+              '件数: ' + cnt + '件',
+              '感情: ' + (top3.length > 0 ? top3.join('・') : '-'),
+            ];
+          }
+        }
+      }
+    }
+  }
+});
+
 // 感情別平均気分スコアグラフ
 const emoLabels   = ["喜び","信頼","恐れ","驚き","悲しみ","嫌悪","怒り","期待"];
 const emoAvgData  = [4.3,3.8,2.9,4,3,null,2.7,3.7];
