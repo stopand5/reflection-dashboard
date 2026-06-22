@@ -34,7 +34,7 @@
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/6/22 1:17:40　｜　全49件</p>
+<p class="meta">更新: 2026/6/22 12:38:24　｜　全49件</p>
 
 <div class="card">
   <div class="stats">
@@ -201,16 +201,15 @@ new Chart(ctx, {
         ),
         pointRadius: 6,
         pointHoverRadius: 8,
-        tension: 0.3,
+        tension: 0.5,
         fill: true,
       },
       {
         label: '移動平均（5件）',
         data: movAvgPoints,
         borderColor: '#3498db',
-        borderDash: [6, 3],
         pointRadius: 0,
-        tension: 0.4,
+        tension: 0,
         fill: false,
       }
     ]
