@@ -34,7 +34,7 @@
 </head>
 <body>
 <h1>📓 リフレクション ダッシュボード</h1>
-<p class="meta">更新: 2026/7/6 23:05:20　｜　全62件</p>
+<p class="meta">更新: 2026/7/6 23:09:06　｜　全62件</p>
 
 <div class="card">
   <div class="stats">
@@ -176,14 +176,15 @@ const posiPoints = entries
   .filter(e => e.positivity !== null)
   .map(e => ({ x: e.date, y: e.positivity, _meta: e }));
 
-// 移動平均（日付順3件）
+// 移動平均（7件）— 7件揃ってから描画
 const movAvgPoints = (() => {
   const valid = entries.filter(e => e.positivity !== null);
   return valid.map((e, i) => {
-    const slice = valid.slice(Math.max(0, i - 4), i + 1);
+    const slice = valid.slice(Math.max(0, i - 6), i + 1);
+    if (slice.length < 7) return null;
     const avg = slice.reduce((a, b) => a + b.positivity, 0) / slice.length;
     return { x: e.date, y: Math.round(avg * 10) / 10 };
-  });
+  }).filter(p => p !== null);
 })();
 
 const ctx = document.getElementById('posiChart').getContext('2d');
