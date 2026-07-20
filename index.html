@@ -1,0 +1,400 @@
+<style>
+  :root {
+    --ground: #FAF8F5;
+    --surface: #FFFFFF;
+    --surface-2: #F5F1EA;
+    --ink: #2A2724;
+    --ink-soft: #5B554C;
+    --muted: #8F8778;
+    --accent: #D99A2B;
+    --accent-soft: #EBC578;
+    --line-grid: #ECE7DE;
+    --band: #F7F3EC;
+    --border: #ECE6DC;
+    --shadow: 0 1px 2px rgba(40,32,20,.04), 0 6px 20px rgba(40,32,20,.05);
+    --joy: #E3B505; --trust: #4CA64C; --fear: #17A2A2; --surprise: #4E63C8;
+    --sadness: #2E6BD0; --disgust: #8B39A8; --anger: #D23A3A; --anticipation: #E07C1E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #17140F; --surface: #201C15; --surface-2: #26221A; --ink: #EFE9DE;
+      --ink-soft: #C3BAA9; --muted: #948B7A; --accent: #E8B24C; --accent-soft: #7A5C22;
+      --line-grid: #322C22; --band: #1D1913; --border: #322C22;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 22px rgba(0,0,0,.35);
+      --joy: #E9C232; --trust: #5EBE5E; --fear: #2CBEBE; --surprise: #6E80DA;
+      --sadness: #4E86E0; --disgust: #A957C4; --anger: #E25A5A; --anticipation: #EC9540;
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #FAF8F5; --surface: #FFFFFF; --surface-2: #F5F1EA; --ink: #2A2724;
+    --ink-soft: #5B554C; --muted: #8F8778; --accent: #D99A2B; --accent-soft: #EBC578;
+    --line-grid: #ECE7DE; --band: #F7F3EC; --border: #ECE6DC; --shadow: 0 1px 2px rgba(40,32,20,.04), 0 6px 20px rgba(40,32,20,.05);
+    --joy: #E3B505; --trust: #4CA64C; --fear: #17A2A2; --surprise: #4E63C8;
+    --sadness: #2E6BD0; --disgust: #8B39A8; --anger: #D23A3A; --anticipation: #E07C1E;
+  }
+  :root[data-theme="dark"] {
+    --ground: #17140F; --surface: #201C15; --surface-2: #26221A; --ink: #EFE9DE;
+    --ink-soft: #C3BAA9; --muted: #948B7A; --accent: #E8B24C; --accent-soft: #7A5C22;
+    --line-grid: #322C22; --band: #1D1913; --border: #322C22; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 22px rgba(0,0,0,.35);
+    --joy: #E9C232; --trust: #5EBE5E; --fear: #2CBEBE; --surprise: #6E80DA;
+    --sadness: #4E86E0; --disgust: #A957C4; --anger: #E25A5A; --anticipation: #EC9540;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", Meiryo, system-ui, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { margin-bottom: 24px; }
+  .eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 6px; }
+  h1 { font-size: 25px; font-weight: 800; margin: 0 0 6px; letter-spacing: .01em; text-wrap: balance; }
+  .meta { font-size: 12.5px; color: var(--muted); margin: 0; font-variant-numeric: tabular-nums; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0 26px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 16px 14px; box-shadow: var(--shadow); }
+  .kpi .num { font-size: 30px; font-weight: 800; color: var(--accent); line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .kpi .lbl { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .card h2 { font-size: 15px; font-weight: 700; margin: 0 0 2px; color: var(--ink); }
+  .card .sub { font-size: 12px; color: var(--muted); margin: 0 0 16px; }
+
+  .chartbox { position: relative; width: 100%; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 14px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-soft); }
+  .legend .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+  .legend .line-swatch { width: 18px; height: 0; border-top-width: 3px; border-top-style: solid; }
+  .legend .dot-swatch { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  .tip {
+    position: absolute; pointer-events: none; opacity: 0; transform: translate(-50%, -108%);
+    background: var(--ink); color: var(--ground); border-radius: 9px; padding: 9px 12px;
+    font-size: 11.5px; line-height: 1.55; max-width: 230px; box-shadow: 0 6px 18px rgba(0,0,0,.28);
+    transition: opacity .12s; z-index: 5; font-variant-numeric: tabular-nums;
+  }
+  .tip b { color: var(--accent-soft); }
+  .tip .t-date { font-weight: 700; margin-bottom: 2px; }
+  .tip .t-title { color: var(--ground); opacity: .82; font-size: 11px; }
+
+  .foot { font-size: 11.5px; color: var(--muted); margin-top: 26px; line-height: 1.7; }
+
+  @media (max-width: 560px) { .kpis { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 21px; } }
+  @media (prefers-reduced-motion: reduce) { .tip { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Reflection Dashboard</p>
+    <h1>📓 リフレクション ダッシュボード</h1>
+    <p class="meta" id="meta"></p>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section class="card">
+    <h2>気分スコアの時系列推移</h2>
+    <p class="sub">各エントリの気分スコア（1〜5）と10件移動平均。横軸は月ごとに等幅</p>
+    <div class="chartbox" id="ts-box">
+      <div class="tip" id="ts-tip"></div>
+    </div>
+    <div class="legend">
+      <span class="item"><span class="dot-swatch" style="background:var(--accent-soft)"></span>気分スコア</span>
+      <span class="item"><span class="line-swatch" style="border-color:var(--accent)"></span>移動平均（10件）</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>感情の輪（全期間）</h2>
+    <p class="sub">淡い足あと＝全期間の出現数／<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid #888;vertical-align:middle"></span> 白い丸＝直近30日の出現数（大きいほど多い）。最近どの感情に集まっているかが分かる</p>
+    <div class="chartbox" id="wheel-box" style="max-width:520px;margin:0 auto;"></div>
+  </section>
+
+  <section class="card">
+    <h2>月別 感情比率</h2>
+    <p class="sub">プルチックの8基本感情の月ごとの構成比（主感情＋副感情を強弱で重みづけ）</p>
+    <div class="chartbox" id="em-box"></div>
+    <div class="legend" id="em-legend"></div>
+  </section>
+
+  <section class="card">
+    <h2>曜日別 平均気分スコア</h2>
+    <p class="sub">記録された曜日ごとの平均気分スコア</p>
+    <div class="chartbox" id="dow-box"></div>
+  </section>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+const entries = [{"date":"2026-01-04","title":"AIの可能性とワクワク感","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"恍惚（喜びの強）","emotion2":"警戒（期待の強）"},{"date":"2026-01-05","title":"仕事始め・資料作成のもどかしさ・保育園見学","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不満（怒りの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-01-06","title":"仕事モードへの復帰・キャリア模索","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-01-08","title":"コーチング・勉強会・データビジュアライゼーションのアイデア","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"期待（期待の中）"},{"date":"2026-01-11","title":"万葉の湯・Vision to Value の構想","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"関心（期待の弱）","emotion2":"穏やかさ（喜びの弱）"},{"date":"2026-01-12","title":"水族館・シンガポール出発","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"喜び（喜びの中）","emotion2":"崇拝（信頼の強）"},{"date":"2026-01-13","title":"シンガポール到着初日・異文化と自己理解","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"受容（信頼の弱）","emotion2":"警戒（期待の強）"},{"date":"2026-01-14","title":"シンガポールセッション初日・「もう一つの柱」への決意","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-01-17","title":"太田さんとの対話・キャリアの問い直し（帰路）","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"信頼（信頼の中）","emotion2":"関心（期待の弱）"},{"date":"2026-01-17","title":"帰国後の日常・後回し習慣・リフォーム","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不満（怒りの弱）","emotion2":"不安（恐れの弱）"},{"date":"2026-01-19","title":"学校の夢・人と会える「大きな庭」","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"穏やかさ（喜びの弱）","emotion2":"驚き（驚きの中）"},{"date":"2026-01-21","title":"停滞感・ジャーナリング継続の手応え","posiLabel":"⭐⭐","positivity":2,"emotion":"悲しみ（悲しみの中）","emotion2":"関心（期待の弱）"},{"date":"2026-01-22","title":"専門性への不安・AIジャーナリングの可能性","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-01-24","title":"ホームパーティー・スキー欲の再燃","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"期待（期待の中）"},{"date":"2026-01-27","title":"強みの再認識・切り替えポイントへの決意","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"受容（信頼の弱）"},{"date":"2026-01-29","title":"カジュアル面接・ワークショップを本業の柱に","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-02-01","title":"ストレングスファインダー分析への関心・家族の体調不良","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"関心（期待の弱）","emotion2":"穏やかさ（喜びの弱）"},{"date":"2026-02-03","title":"次女の発表会・子供の成長からの刺激","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"崇拝（信頼の強）"},{"date":"2026-02-05","title":"元先輩との対話・手作り感の面白さ・軟着陸","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"関心（期待の弱）","emotion2":"喜び（喜びの中）"},{"date":"2026-02-08","title":"週末の憂鬱・ローンの重圧・受け流す姿勢","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"受容（信頼の弱）"},{"date":"2026-02-17","title":"保育園書類完了・年収ダウンへの捉え方の変化","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"受容（信頼の弱）","emotion2":"関心（期待の弱）"},{"date":"2026-02-17","title":"転職活動・データビジネスモデルへの関心","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"関心（期待の弱）"},{"date":"2026-02-24","title":"アブダビ出張準備・仮説を立てる楽しさ","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"関心（期待の弱）"},{"date":"2026-02-27","title":"旧上司との対話・バイアスへの自戒","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"警戒（期待の強）","emotion2":"受容（信頼の弱）"},{"date":"2026-03-09","title":"上司からのフィードバック・焦りと不満","posiLabel":"⭐⭐","positivity":2,"emotion":"不満（怒りの弱）","emotion2":"不安（恐れの弱）"},{"date":"2026-03-12","title":"転職面談2件・専門性のギブ・覚悟の言語化","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"期待（期待の中）"},{"date":"2026-03-26","title":"転職活動最終局面・スキルアップデートへの決断","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"期待（期待の中）","emotion2":"不安（恐れの弱）"},{"date":"2026-04-01","title":"社会人18年目・娘の新保育園スタート","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"受容（信頼の弱）"},{"date":"2026-04-09","title":"最終面接前・人生の「境目」の感覚","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"期待（期待の中）"},{"date":"2026-04-14","title":"内定への決意・誠実さと戦略の葛藤","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"信頼（信頼の中）"},{"date":"2026-04-21","title":"転職承諾・契約書へのサイン","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"喜び（喜びの中）"},{"date":"2026-04-23","title":"非連続な変化へのマイルストーン：転職サイン×引っ越し×誕生日半年","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"喜び（喜びの中）"},{"date":"2026-05-05","title":"GW最終日・引越し片付け・自分の時間への焦り","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"受容（信頼の弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-05-08","title":"家族旅行・高級旅館・卒業への予感","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"穏やかさ（喜びの弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-05-14","title":"退職をオープンに・初めて「逆側」に立つ","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"受容（信頼の弱）"},{"date":"2026-05-16","title":"音楽ライブ・ひとつのことを追い続ける強さ","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"恍惚（喜びの強）","emotion2":"崇拝（信頼の強）"},{"date":"2026-05-24","title":"最終出勤週前日・思考蓄積システムへの情熱","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"警戒（期待の強）","emotion2":"関心（期待の弱）"},{"date":"2026-05-29","title":"送別会・強みへの確信・喪失感","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"受容（信頼の弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-06-02","title":"後輩との飲み会・心の通い合いの再発見","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"喜び（喜びの中）","emotion2":"信頼（信頼の中）"},{"date":"2026-06-07","title":"家族旅行・「今」を大切にする","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"穏やかさ（喜びの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-06-12","title":"中国旅行からの帰国と「新しい挑戦」へのエネルギー","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"関心（期待の弱）","emotion2":"穏やかさ（喜びの弱）"},{"date":"2026-06-15","title":"旧オフィスチームとのランチと、信頼関係のデザイン","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"崇拝（信頼の強）","emotion2":"期待（期待の中）"},{"date":"2026-06-17","title":"新組織の輪郭と新たなスタートへの覚悟","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"期待（期待の中）","emotion2":"不安（恐れの弱）"},{"date":"2026-06-17","title":"AIを活用した思考蓄積とリフレクションの手応え","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"関心（期待の弱）","emotion2":"喜び（喜びの中）"},{"date":"2026-06-18","title":"送別会・場に応じたつながりのデザイン","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"喜び（喜びの中）","emotion2":"信頼（信頼の中）"},{"date":"2026-06-19","title":"陽気な仲間との再会と「自身の存在」の再確認","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"穏やかさ（喜びの弱）","emotion2":"信頼（信頼の中）"},{"date":"2026-06-19","title":"技術の進化と「かつての理想」の具現化","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"恍惚（喜びの強）","emotion2":"警戒（期待の強）"},{"date":"2026-06-20","title":"娘とのプールと、体力の現在地から見つめる運動習慣の課題","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-06-21","title":"誰かと共鳴する高揚感、1人では届かない感情の景色","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"恍惚（喜びの強）","emotion2":"崇拝（信頼の強）"},{"date":"2026-06-21","title":"技術の核心への投資と、専門性の掛け算","posiLabel":"⭐⭐⭐⭐⭐","positivity":5,"emotion":"期待（期待の中）","emotion2":"恍惚（喜びの強）"},{"date":"2026-06-22","title":"「やれること」の洪水と、プロトタイプの壁","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"警戒（期待の強）","emotion2":"不安（恐れの弱）"},{"date":"2026-06-23","title":"次女の成長と「二度と戻らない尊い時間」への眼差し","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"物悲しさ（悲しみの弱）","emotion2":"崇拝（信頼の強）"},{"date":"2026-06-23","title":"Claude Codeへの没頭と、新生活に向けたリズム・技術確立の葛藤","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"恍惚（喜びの強）","emotion2":"不安（恐れの弱）"},{"date":"2026-06-24","title":"夢に現れた過去の葛藤と、複雑な感情の現在地","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"怒り（怒りの中）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-06-25","title":"リトリートでの五感の揺らぎと「最後のオセロ」の葛藤","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-06-26","title":"最終出社日、組織を離れるリアルな実感と感謝","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"受容（信頼の弱）","emotion2":"穏やかさ（喜びの弱）"},{"date":"2026-06-28","title":"過去に静かな決別を告げる","posiLabel":"⭐⭐","positivity":2,"emotion":"怒り（怒りの中）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-06-30","title":"新たな挑戦への覚悟と鎧の廃棄","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"不安（恐れの弱）"},{"date":"2026-07-01","title":"新職場への初出勤と戸惑い・焦りの中の意志","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-07-02","title":"新組織の全体像と自己ギャップへの懸念","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"関心（期待の弱）","emotion2":"不安（恐れの弱）"},{"date":"2026-07-04","title":"長女の授業参観と鏡に映る自己との対峙","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"関心（期待の弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-07-05","title":"明日への焦りと、ありたい姿への確信","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"不安（恐れの弱）","emotion2":"期待（期待の中）"},{"date":"2026-07-06","title":"目指す世界の面白さと学びへの前向きな意欲","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"関心（期待の弱）"},{"date":"2026-07-07","title":"組織の指針と自己のあり方の調和","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"警戒（期待の強）","emotion2":"受容（信頼の弱）"},{"date":"2026-07-08","title":"カルチャーの重圧と増えゆく「分からない」への葛藤","posiLabel":"⭐⭐","positivity":2,"emotion":"不安（恐れの弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-07-10","title":"組織構造の対比とイネーブルメントへの驚き","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"関心（期待の弱）","emotion2":"驚き（驚きの中）"},{"date":"2026-07-11","title":"エージェントストラテジストの学び","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"喜び（喜びの中）"},{"date":"2026-07-12","title":"娘たちの強み志向と明日への静かな焦り","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"穏やかさ（喜びの弱）","emotion2":"不安（恐れの弱）"},{"date":"2026-07-14","title":"今しかない愛しい瞬間への眼差し","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"穏やかさ（喜びの弱）","emotion2":"物悲しさ（悲しみの弱）"},{"date":"2026-07-15","title":"目標設定のプレッシャーと自己マネジメント","posiLabel":"⭐⭐","positivity":2,"emotion":"不安（恐れの弱）","emotion2":"関心（期待の弱）"},{"date":"2026-07-16","title":"夢から気づく新環境の壁と本音の場","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"物悲しさ（悲しみの弱）","emotion2":"不安（恐れの弱）"},{"date":"2026-07-17","title":"新ソリューションへの熱量と探求への決意","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"期待（期待の中）","emotion2":"関心（期待の弱）"},{"date":"2026-07-18","title":"夏の思い出作りと新環境での優先順位","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"悲しみ（悲しみの中）","emotion2":"期待（期待の中）"},{"date":"2026-07-18","title":"インプラント治療のギャップと習慣化への意欲","posiLabel":"⭐⭐⭐","positivity":3,"emotion":"驚き（驚きの中）","emotion2":"関心（期待の弱）"},{"date":"2026-07-19","title":"日常の一瞬に宿る幸せと喜び","posiLabel":"⭐⭐⭐⭐","positivity":4,"emotion":"喜び（喜びの中）","emotion2":"受容（信頼の弱）"}];
+
+const EMOTION_MAP = {
+  '恍惚（喜びの強）':'喜び','喜び（喜びの中）':'喜び','穏やかさ（喜びの弱）':'喜び',
+  '崇拝（信頼の強）':'信頼','信頼（信頼の中）':'信頼','受容（信頼の弱）':'信頼',
+  '恐怖（恐れの強）':'恐れ','恐れ（恐れの中）':'恐れ','不安（恐れの弱）':'恐れ',
+  '驚嘆（驚きの強）':'驚き','驚き（驚きの中）':'驚き','動揺（驚きの弱）':'驚き',
+  '悲嘆（悲しみの強）':'悲しみ','悲しみ（悲しみの中）':'悲しみ','物悲しさ（悲しみの弱）':'悲しみ',
+  '憎悪（嫌悪の強）':'嫌悪','嫌悪（嫌悪の中）':'嫌悪','倦怠（嫌悪の弱）':'嫌悪',
+  '激怒（怒りの強）':'怒り','怒り（怒りの中）':'怒り','不満（怒りの弱）':'怒り',
+  '警戒（期待の強）':'期待','期待（期待の中）':'期待','関心（期待の弱）':'期待',
+};
+const EMOTIONS_8 = ['喜び','信頼','恐れ','驚き','悲しみ','嫌悪','怒り','期待'];
+const EMO_VAR = { '喜び':'--joy','信頼':'--trust','恐れ':'--fear','驚き':'--surprise','悲しみ':'--sadness','嫌悪':'--disgust','怒り':'--anger','期待':'--anticipation' };
+const weightOf = k => k.includes('の強）') ? 3 : k.includes('の中）') ? 2 : 1;
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+// Catmull-Rom → cubic bezier: 点列をなめらかにつなぐパス
+function smoothPath(pts) {
+  if (pts.length < 2) return '';
+  if (pts.length === 2) return `M${pts[0].x},${pts[0].y}L${pts[1].x},${pts[1].y}`;
+  let d = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+    d += `C${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`;
+  }
+  return d;
+}
+
+// ---------- KPIs ----------
+const valid = entries.filter(e => e.positivity != null);
+const avgAll = (valid.reduce((a,b)=>a+b.positivity,0)/valid.length).toFixed(1);
+const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+const recent = entries.filter(e => new Date(e.date) >= cutoff);
+const recentValid = recent.filter(e => e.positivity != null);
+const recentAvg = recentValid.length ? (recentValid.reduce((a,b)=>a+b.positivity,0)/recentValid.length).toFixed(1) : '–';
+document.getElementById('meta').textContent = `スナップショット（全 ${entries.length} 件）　｜　2026-01-04 〜 ${entries[entries.length-1].date}`;
+document.getElementById('kpis').innerHTML = [
+  [entries.length, 'エントリ数（総数）'],
+  [avgAll, '平均気分スコア（総数）'],
+  [recent.length, 'エントリ数（直近30日）'],
+  [recentAvg, '平均気分スコア（直近30日）'],
+].map(([n,l]) => `<div class="kpi"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join('');
+
+// ---------- Time series (equal-width months) ----------
+(function(){
+  const W = 860, H = 340, padL = 34, padR = 14, padT = 16, padB = 40;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const y = v => padT + plotH * (1 - (v-1)/4);
+
+  const months = [...new Set(entries.map(e => e.date.slice(0,7)))].sort();
+  const bandW = plotW / months.length;
+  const daysIn = mk => { const [Y,M] = mk.split('-').map(Number); return new Date(Y, M, 0).getDate(); };
+  // x: each month equal width; position within band by day-of-month, with small inset
+  const xOf = e => {
+    const mk = e.date.slice(0,7);
+    const mi = months.indexOf(mk);
+    const day = parseInt(e.date.slice(8,10));
+    const frac = (day - 1) / daysIn(mk);
+    return padL + bandW * (mi + 0.08 + frac * 0.84);
+  };
+  const xs = entries.map(xOf);
+
+  // moving average (7 entries); draw only when 7 available
+  const mov = entries.map((e,i) => {
+    const s = entries.slice(Math.max(0,i-9), i+1).map(z=>z.positivity).filter(v=>v!=null);
+    return s.length < 10 ? null : Math.round(s.reduce((a,b)=>a+b,0)/s.length*10)/10;
+  });
+
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':'気分スコアの時系列推移' });
+
+  // alternating month band backgrounds + separators + centered labels
+  months.forEach((mk, mi) => {
+    const bx = padL + bandW * mi;
+    if (mi % 2 === 1) svg.appendChild(el('rect', { x:bx, y:padT, width:bandW, height:plotH, fill:cssv('--band') }));
+    if (mi > 0) svg.appendChild(el('line', { x1:bx, y1:padT, x2:bx, y2:padT+plotH, stroke:cssv('--line-grid'), 'stroke-width':1 }));
+    const t = el('text', { x:bx+bandW/2, y:H-padB+22, 'text-anchor':'middle', 'font-size':11, fill:cssv('--muted') });
+    t.textContent = parseInt(mk.slice(5)) + '月'; svg.appendChild(t);
+  });
+
+  // horizontal gridlines + y labels
+  for (let v=1; v<=5; v++){
+    const gy = y(v);
+    svg.appendChild(el('line', { x1:padL, y1:gy, x2:W-padR, y2:gy, stroke:cssv('--line-grid'), 'stroke-width':1, opacity:0.7 }));
+    const t = el('text', { x:padL-8, y:gy+4, 'text-anchor':'end', 'font-size':11, fill:cssv('--muted') }); t.textContent=v; svg.appendChild(t);
+  }
+
+  // moving avg line (solid, smooth curve, segmented across nulls)
+  let seg = [];
+  const flush = () => { if (seg.length>1) svg.appendChild(el('path', { d:smoothPath(seg), fill:'none', stroke:cssv('--accent'), 'stroke-width':3, 'stroke-linejoin':'round', 'stroke-linecap':'round' })); seg=[]; };
+  mov.forEach((v,i)=>{ if (v==null){ flush(); } else { seg.push({x:xs[i], y:y(v)}); } });
+  flush();
+
+  // raw dots (点のみ・線でつながない)
+  entries.forEach((e,i)=> svg.appendChild(el('circle', { cx:xs[i], cy:y(e.positivity), r:3.2, fill:cssv('--accent-soft'), stroke:cssv('--surface'), 'stroke-width':1 })));
+
+  // hover
+  const hoverLine = el('line', { x1:0,y1:padT,x2:0,y2:H-padB, stroke:cssv('--accent'), 'stroke-width':1, opacity:0 });
+  const hoverDot = el('circle', { r:5, fill:cssv('--accent'), stroke:cssv('--surface'), 'stroke-width':2, opacity:0 });
+  svg.appendChild(hoverLine); svg.appendChild(hoverDot);
+  const over = el('rect', { x:padL, y:padT, width:plotW, height:plotH, fill:'transparent' });
+  svg.appendChild(over);
+
+  const box = document.getElementById('ts-box');
+  box.insertBefore(svg, box.firstChild);
+  const tip = document.getElementById('ts-tip');
+
+  function move(clientX){
+    const r = svg.getBoundingClientRect();
+    const vbX = (clientX - r.left) * (W / r.width);
+    let i = 0, best = Infinity;
+    for (let k=0; k<xs.length; k++){ const d = Math.abs(xs[k]-vbX); if (d<best){ best=d; i=k; } }
+    const e = entries[i], px = xs[i], py = y(e.positivity);
+    hoverLine.setAttribute('x1', px); hoverLine.setAttribute('x2', px); hoverLine.setAttribute('opacity', 0.5);
+    hoverDot.setAttribute('cx', px); hoverDot.setAttribute('cy', py); hoverDot.setAttribute('opacity', 1);
+    tip.style.left = (px * (r.width / W)) + 'px';
+    tip.style.top  = (py * (r.height / H)) + 'px';
+    const movTxt = mov[i]!=null ? `　移動平均 <b>${mov[i]}</b>` : '';
+    tip.innerHTML = `<div class="t-date">${e.date}　${e.posiLabel}</div><div>気分 <b>${e.positivity}</b>　${esc(EMOTION_MAP[e.emotion]||e.emotion)}${movTxt}</div><div class="t-title">${esc(e.title)}</div>`;
+    tip.style.opacity = 1;
+  }
+  over.addEventListener('mousemove', ev => move(ev.clientX));
+  over.addEventListener('mouseleave', () => { tip.style.opacity=0; hoverLine.setAttribute('opacity',0); hoverDot.setAttribute('opacity',0); });
+  svg.addEventListener('touchstart', ev => move(ev.touches[0].clientX), {passive:true});
+  svg.addEventListener('touchmove', ev => move(ev.touches[0].clientX), {passive:true});
+})();
+
+// ---------- Monthly emotion ratio (main + sub) ----------
+(function(){
+  const monthMap = {};
+  entries.forEach(e => {
+    const m = e.date.slice(0,7);
+    for (const raw of [e.emotion, e.emotion2]) {
+      const base = EMOTION_MAP[raw]; if (!base) continue;
+      (monthMap[m] = monthMap[m] || {});
+      monthMap[m][base] = (monthMap[m][base]||0) + weightOf(raw);
+    }
+  });
+  const months = Object.keys(monthMap).sort();
+  const W = 860, H = 300, padL = 16, padR = 16, padT = 10, padB = 30;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const step = plotW/months.length;
+  const bw = Math.min(66, step*0.62);
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':'月別感情比率' });
+
+  months.forEach((m,mi) => {
+    const counts = monthMap[m];
+    const total = Object.values(counts).reduce((a,b)=>a+b,0);
+    const cx = padL + step*mi + step/2;
+    let acc = 0;
+    EMOTIONS_8.forEach(emo => {
+      const val = counts[emo]||0; if (!val) return;
+      const h = (val/total)*plotH;
+      svg.appendChild(el('rect', { x:cx-bw/2, y:padT+plotH-acc-h, width:bw, height:Math.max(0.5,h), fill:cssv(EMO_VAR[emo]), rx:1.5 }));
+      acc += h;
+    });
+    const t = el('text', { x:cx, y:H-padB+20, 'text-anchor':'middle', 'font-size':11.5, fill:cssv('--muted') });
+    t.textContent = parseInt(m.slice(5))+'月'; svg.appendChild(t);
+  });
+  document.getElementById('em-box').appendChild(svg);
+  document.getElementById('em-legend').innerHTML = EMOTIONS_8.map(emo =>
+    `<span class="item"><span class="swatch" style="background:var(${EMO_VAR[emo]})"></span>${emo}</span>`).join('');
+})();
+
+// ---------- Emotion wheel (Plutchik) ----------
+(function(){
+  const HALF = Math.PI/8;
+  const RINGS = [{r1:36,r2:90},{r1:90,r2:152},{r1:152,r2:212}]; // 0=強(内),1=中,2=弱(外)
+  const SECTORS = [
+    { a:-Math.PI/2,   lbl:'喜び',  c:['#B8960A','#E8C000','#FFF0A0'], e:['恍惚（喜びの強）','喜び（喜びの中）','穏やかさ（喜びの弱）'] },
+    { a:-Math.PI/4,   lbl:'信頼',  c:['#1A6018','#3EA835','#BAEAB8'], e:['崇拝（信頼の強）','信頼（信頼の中）','受容（信頼の弱）'] },
+    { a:0,            lbl:'恐れ',  c:['#006868','#18AAAA','#A4E2E2'], e:['恐怖（恐れの強）','恐れ（恐れの中）','不安（恐れの弱）'] },
+    { a:Math.PI/4,    lbl:'驚き',  c:['#243898','#4458C8','#B8C2EE'], e:['驚嘆（驚きの強）','驚き（驚きの中）','動揺（驚きの弱）'] },
+    { a:Math.PI/2,    lbl:'悲しみ',c:['#0A2880','#1858C0','#A4C0EC'], e:['悲嘆（悲しみの強）','悲しみ（悲しみの中）','物悲しさ（悲しみの弱）'] },
+    { a:3*Math.PI/4,  lbl:'嫌悪',  c:['#4E0E78','#8018A0','#D4A8E8'], e:['憎悪（嫌悪の強）','嫌悪（嫌悪の中）','倦怠（嫌悪の弱）'] },
+    { a:Math.PI,      lbl:'怒り',  c:['#800808','#C81818','#EEAAAA'], e:['激怒（怒りの強）','怒り（怒りの中）','不満（怒りの弱）'] },
+    { a:-3*Math.PI/4, lbl:'期待',  c:['#A84000','#E06800','#FFD4A0'], e:['警戒（期待の強）','期待（期待の中）','関心（期待の弱）'] },
+  ];
+  // 出現数カウント（主感情＋副感情）
+  const counts = {};
+  entries.forEach(e => { for (const x of [e.emotion, e.emotion2]) { if (x) counts[x] = (counts[x]||0)+1; } });
+
+  // 直近30日の詳細感情カウント（重ねバブル用）
+  const cutoff30 = new Date(); cutoff30.setDate(cutoff30.getDate()-30);
+  const countsRec = {};
+  entries.forEach(e => {
+    if (new Date(e.date) < cutoff30) return;
+    for (const x of [e.emotion, e.emotion2]) { if (x) countsRec[x] = (countsRec[x]||0)+1; }
+  });
+
+  const W = 600, H = 600, cx = 300, cy = 300;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':'感情の輪' });
+  const P = (r,a) => [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+  const annular = (r1,r2,a1,a2) => {
+    const [x1,y1]=P(r2,a1),[x2,y2]=P(r2,a2),[x3,y3]=P(r1,a2),[x4,y4]=P(r1,a1);
+    return `M${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x4},${y4} Z`;
+  };
+  // セグメント
+  SECTORS.forEach(s => RINGS.forEach((r,ri) => {
+    svg.appendChild(el('path', { d:annular(r.r1,r.r2,s.a-HALF,s.a+HALF), fill:s.c[ri], stroke:'rgba(255,255,255,0.85)', 'stroke-width':1.5 }));
+  }));
+  // ペタル先端
+  SECTORS.forEach(s => {
+    const [x1,y1]=P(212,s.a-HALF),[xt,yt]=P(250,s.a),[x2,y2]=P(212,s.a+HALF);
+    svg.appendChild(el('path', { d:`M${x1},${y1} L${xt},${yt} L${x2},${y2} Z`, fill:s.c[2], 'fill-opacity':0.38, stroke:'rgba(255,255,255,0.5)', 'stroke-width':1 }));
+  });
+  // 中心円
+  svg.appendChild(el('circle', { cx, cy, r:34, fill:cssv('--surface') }));
+  // 累計バブル（淡い足あと）＋ 直近30日バブル（明るく重ねる）
+  SECTORS.forEach(s => RINGS.forEach((r,ri) => {
+    const nAll = counts[s.e[ri]]||0; if (!nAll) return;
+    const midR = (r.r1+r.r2)/2, [px,py]=P(midR, s.a);
+    const rAll = Math.sqrt(nAll)*4+5;
+    // 累計＝淡い足あと
+    svg.appendChild(el('circle', { cx:px, cy:py, r:rAll, fill:cssv('--ink'), 'fill-opacity':0.13, stroke:cssv('--surface'), 'stroke-opacity':0.5, 'stroke-width':1 }));
+    // 直近30日＝白い丸＋感情色の輪郭＋件数
+    const nRec = countsRec[s.e[ri]]||0;
+    if (nRec > 0) {
+      const rRec = Math.sqrt(nRec)*4+5;
+      svg.appendChild(el('circle', { cx:px, cy:py, r:rRec, fill:'#ffffff', stroke:s.c[0], 'stroke-width':2.5 }));
+      const t = el('text', { x:px, y:py, 'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':(rRec>12?12:rRec>9?10:8.5), 'font-weight':700, fill:'#333' });
+      t.textContent = nRec; svg.appendChild(t);
+    }
+  }));
+  // セクターラベル
+  SECTORS.forEach(s => {
+    const [lx,ly]=P(262, s.a);
+    const t = el('text', { x:lx, y:ly, 'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':20, 'font-weight':700, fill:cssv('--ink') });
+    t.textContent = s.lbl; svg.appendChild(t);
+  });
+  document.getElementById('wheel-box').appendChild(svg);
+})();
+
+// ---------- Day of week average ----------
+(function(){
+  const ORDER = [1,2,3,4,5,6,0], LBL = ['月','火','水','木','金','土','日'];
+  const map = {};
+  entries.forEach(e => { if (e.positivity==null) return; const d = new Date(e.date).getDay(); (map[d]=map[d]||[]).push(e.positivity); });
+  const avg = ORDER.map(d => map[d] ? map[d].reduce((a,b)=>a+b,0)/map[d].length : null);
+  const cnt = ORDER.map(d => map[d] ? map[d].length : 0);
+  const W = 860, H = 240, padL = 16, padR = 16, padT = 14, padB = 44;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const step = plotW/7, bw = Math.min(64, step*0.56);
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':'曜日別平均気分スコア' });
+  svg.appendChild(el('line', { x1:padL, y1:padT+plotH, x2:W-padR, y2:padT+plotH, stroke:cssv('--line-grid'), 'stroke-width':1 }));
+  ORDER.forEach((d,i) => {
+    const cx = padL + step*i + step/2;
+    const v = avg[i];
+    const h = v!=null ? (v/5)*plotH : 0;
+    const yTop = padT+plotH-h;
+    const isWknd = d===0 || d===6;
+    svg.appendChild(el('rect', { x:cx-bw/2, y:yTop, width:bw, height:Math.max(1,h), rx:5, fill: v==null?cssv('--line-grid'):(isWknd?cssv('--accent-soft'):cssv('--accent')) }));
+    const t1 = el('text', { x:cx, y:yTop-8, 'text-anchor':'middle', 'font-size':13, 'font-weight':700, fill:cssv('--ink') }); t1.textContent = v!=null?v.toFixed(1):'–'; svg.appendChild(t1);
+    const t2 = el('text', { x:cx, y:H-padB+22, 'text-anchor':'middle', 'font-size':13, 'font-weight':700, fill:cssv('--ink-soft') }); t2.textContent = LBL[i]; svg.appendChild(t2);
+    const t3 = el('text', { x:cx, y:H-padB+38, 'text-anchor':'middle', 'font-size':10.5, fill:cssv('--muted') }); t3.textContent = cnt[i]+'件'; svg.appendChild(t3);
+  });
+  document.getElementById('dow-box').appendChild(svg);
+})();
+
+
+// re-render on theme toggle so CSS-var colors refresh
+new MutationObserver(() => location.reload())
+  .observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+</script>
