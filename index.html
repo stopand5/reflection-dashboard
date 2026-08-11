@@ -122,7 +122,7 @@
 
   <section class="card">
     <h2>曜日別 平均気分スコア</h2>
-    <p class="sub">記録された曜日ごとの平均気分スコア</p>
+    <p class="sub">直近90日の記録から、曜日ごとの平均気分スコア</p>
     <div class="chartbox" id="dow-box"></div>
   </section>
 
@@ -367,11 +367,12 @@ document.getElementById('kpis').innerHTML = [
   document.getElementById('wheel-box').appendChild(svg);
 })();
 
-// ---------- Day of week average ----------
+// ---------- Day of week average (直近90日) ----------
 (function(){
   const ORDER = [1,2,3,4,5,6,0], LBL = ['月','火','水','木','金','土','日'];
+  const cut90 = new Date(); cut90.setDate(cut90.getDate()-90);
   const map = {};
-  entries.forEach(e => { if (e.positivity==null) return; const d = new Date(e.date).getDay(); (map[d]=map[d]||[]).push(e.positivity); });
+  entries.forEach(e => { if (e.positivity==null) return; if (new Date(e.date) < cut90) return; const d = new Date(e.date).getDay(); (map[d]=map[d]||[]).push(e.positivity); });
   const avg = ORDER.map(d => map[d] ? map[d].reduce((a,b)=>a+b,0)/map[d].length : null);
   const cnt = ORDER.map(d => map[d] ? map[d].length : 0);
   const W = 860, H = 240, padL = 16, padR = 16, padT = 14, padB = 44;
