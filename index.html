@@ -126,6 +126,12 @@
     <div class="chartbox" id="dow-box"></div>
   </section>
 
+  <section class="card">
+    <h2>感情別 スコア分布（直近90日）</h2>
+    <p class="sub">感情ごとの気分スコア（1〜5）のばらつきと平均。丸の大きさ＝件数、縦線＝平均</p>
+    <div class="chartbox" id="dist-box"></div>
+  </section>
+
   <p class="foot" id="foot"></p>
 </div>
 
@@ -394,6 +400,58 @@ document.getElementById('kpis').innerHTML = [
   document.getElementById('dow-box').appendChild(svg);
 })();
 
+// ---------- Emotion score distribution (直近90日) ----------
+(function(){
+  const cut90 = new Date(); cut90.setDate(cut90.getDate()-90);
+  const byEmo = {}; // base -> [scores]
+  entries.forEach(e => {
+    if (e.positivity==null) return;
+    if (new Date(e.date) < cut90) return;
+    for (const x of [e.emotion, e.emotion2]) {
+      const b = EMOTION_MAP[x]; if (!b) continue;
+      (byEmo[b] = byEmo[b] || []).push(e.positivity);
+    }
+  });
+  const present = EMOTIONS_8.filter(em => (byEmo[em]||[]).length > 0);
+  if (present.length === 0) return;
+
+  const W = 860, padL = 78, padR = 118, padT = 14, rowH = 44;
+  const x0 = padL, x1 = W - padR;
+  const H = padT + present.length * rowH + 30;
+  const xScore = s => x0 + (s - 1) / 4 * (x1 - x0);
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':'感情別スコア分布（直近90日）' });
+
+  // 縦グリッド 1..5
+  for (let s = 1; s <= 5; s++) {
+    const gx = xScore(s);
+    svg.appendChild(el('line', { x1:gx, y1:padT, x2:gx, y2:padT + present.length*rowH, stroke:cssv('--line-grid'), 'stroke-width':1 }));
+    const t = el('text', { x:gx, y:padT + present.length*rowH + 18, 'text-anchor':'middle', 'font-size':11, fill:cssv('--muted') });
+    t.textContent = s; svg.appendChild(t);
+  }
+
+  present.forEach((emo, i) => {
+    const arr = byEmo[emo];
+    const rowY = padT + i*rowH + rowH/2;
+    const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+    // 感情ラベル
+    const lbl = el('text', { x:x0-12, y:rowY, 'text-anchor':'end', 'dominant-baseline':'central', 'font-size':13, 'font-weight':700, fill:cssv(EMO_VAR[emo]) });
+    lbl.textContent = emo; svg.appendChild(lbl);
+    // スコア別の件数バブル
+    for (let s = 1; s <= 5; s++) {
+      const c = arr.filter(v => v === s).length; if (!c) continue;
+      const r = 3 + Math.sqrt(c) * 2.4;
+      svg.appendChild(el('circle', { cx:xScore(s), cy:rowY, r, fill:cssv(EMO_VAR[emo]), 'fill-opacity':0.5, stroke:cssv(EMO_VAR[emo]), 'stroke-width':1.2 }));
+      if (c >= 2) { const ct = el('text', { x:xScore(s), y:rowY, 'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':9.5, 'font-weight':700, fill:cssv('--ink') }); ct.textContent = c; svg.appendChild(ct); }
+    }
+    // 平均の縦線
+    svg.appendChild(el('line', { x1:xScore(mean), y1:rowY-16, x2:xScore(mean), y2:rowY+16, stroke:cssv('--ink'), 'stroke-width':2 }));
+    // 右側 平均・件数
+    const st = el('text', { x:x1+14, y:rowY, 'dominant-baseline':'central', 'font-size':12, fill:cssv('--ink-soft') });
+    st.textContent = '平均 ' + (Math.round(mean*10)/10).toFixed(1) + '　n=' + arr.length; svg.appendChild(st);
+  });
+
+  document.getElementById('dist-box').appendChild(svg);
+})();
 
 // re-render on theme toggle so CSS-var colors refresh
 new MutationObserver(() => location.reload())
