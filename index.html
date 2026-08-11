@@ -412,7 +412,9 @@ document.getElementById('kpis').innerHTML = [
       (byEmo[b] = byEmo[b] || []).push(e.positivity);
     }
   });
-  const present = EMOTIONS_8.filter(em => (byEmo[em]||[]).length > 0);
+  const meanOf = em => { const a = byEmo[em]; return a.reduce((x,y)=>x+y,0)/a.length; };
+  const present = EMOTIONS_8.filter(em => (byEmo[em]||[]).length > 0)
+    .sort((a,b) => meanOf(b) - meanOf(a));
   if (present.length === 0) return;
 
   const W = 860, padL = 78, padR = 118, padT = 14, rowH = 44;
